@@ -2,6 +2,7 @@ import pandas as pd
 import os
 import math
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 
@@ -82,6 +83,54 @@ def gerar_dataframe(arquivo_acc,arquivo_gir,arquivo_sampling):
 
     return acc,gir,sampling
 
+def gerar_rotulos(atividade):
+    labels_multiplos = {"ADL_1": 0, "ADL_2": 1, "ADL_3": 2, "ADL_4": 3, "ADL_5": 4, "ADL_6": 5, "ADL_7": 6, "ADL_8": 7,
+                        "ADL_11": 8, "ADL_12": 9, "ADL_13": 10, "ADL_14": 11, "ADL_15": 12, "OM_1": 13, "OM_2": 14,
+                        "OM_3": 15, "OM_4": 16, "OM_5": 17, "OM_6": 18, "OM_7": 19, "OM_8": 20, "OM_9": 21,
+                        "FALL_1": 22, "FALL_2": 23, "FALL_3": 24, "FALL_5": 25, "FALL_6": 25}
+
+    labels_tres = {"ADL_1": 1, "ADL_2": 1, "ADL_3": 1, "ADL_4": 1, "ADL_5": 1, "ADL_6": 1, "ADL_7": 1, "ADL_8": 1,
+                   "ADL_11": 1, "ADL_12": 1, "ADL_13": 1, "ADL_14": 1, "ADL_15": 1, "OM_1": 2,
+                   "OM_2": 2, "OM_3": 2, "OM_4": 2, "OM_5": 2, "OM_6": 2, "OM_7": 2, "OM_8": 2, "OM_9": 2,
+                   "FALL_1": 0, "FALL_2": 0, "FALL_3": 0, "FALL_5": 0, "FALL_6": 0}
+
+    '''Labels binario 1 as atividades 0M6 a OM8 são consideradas como quedas'''
+    labels_binario1 = {"ADL_1": 1, "ADL_2": 1, "ADL_3": 1, "ADL_4": 1, "ADL_5": 1, "ADL_6": 1, "ADL_7": 1, "ADL_8": 1,
+                       "ADL_11": 1, "ADL_12": 1, "ADL_13": 1, "ADL_14": 1, "ADL_15": 1, "OM_1": 1,
+                       "OM_2": 1, "OM_3": 1, "OM_4": 1, "OM_5": 1, "OM_6": 0, "OM_7": 0, "OM_8": 0, "OM_9": 1,
+                       "FALL_1": 0, "FALL_2": 0, "FALL_3": 0, "FALL_5": 0, "FALL_6": 0}
+
+    '''Labels binario 2 as atividades 0M6 a OM8 são consideradas como não quedas'''
+    labels_binario2 = {"ADL_1": 1, "ADL_2": 1, "ADL_3": 1, "ADL_4": 1, "ADL_5": 1, "ADL_6": 1, "ADL_7": 1, "ADL_8": 1,
+                       "ADL_11": 1, "ADL_12": 1, "ADL_13": 1, "ADL_14": 1, "ADL_15": 1, "OM_1": 1,
+                       "OM_2": 1, "OM_3": 1, "OM_4": 1, "OM_5": 1, "OM_6": 0, "OM_7": 0, "OM_8": 0, "OM_9": 1,
+                       "FALL_1": 0, "FALL_2": 0, "FALL_3": 0, "FALL_5": 0, "FALL_6": 0}
+
+    rotulo_multiplos = labels_multiplos.get(atividade)
+    rotulo_tres = labels_tres.get(atividade)
+    rotulo_binario1 = labels_binario1.get(atividade)
+    rotulo_binario2 = labels_binario2.get(atividade)
+
+    return rotulo_multiplos,rotulo_tres,rotulo_binario1,rotulo_binario2
+
+def gerar_array_de_atividades_de_5s(atividade,serie_de_dados,tamanho_do_array,lista_array_de_dados,lista_de_rotulos,rotulo):
+    valor_maximo = max(serie_de_dados)
+    if atividade == "ADL_7" or atividade == "ADL_8" or atividade == "ADL_15":
+        array_de_dados = serie_de_dados[:tamanho_do_array]
+        array_de_dados = np.array(array_de_dados)
+        array_de_dados = np.expand_dims(array_de_dados, axis=1)
+        lista_array_de_dados.append(array_de_dados)
+    elif valor_maximo > 20:
+        array_de_dados = serie_de_dados[:tamanho_do_array]
+        array_de_dados = np.array(array_de_dados)
+        array_de_dados = np.expand_dims(array_de_dados, axis=1)
+        lista_array_de_dados.append(array_de_dados)
+    lista_de_rotulos.append(rotulo)
+    lista_de_rotulos_magacc_multiplo.append(rotulo)
+    lista_de_rotulos_magacc_tres_labels = []
+    lista_de_rotulos_magacc_binario1 = []
+    lista_de_rotulos_magacc_binario2 = []
+
 def seccionar_array_de_dados(df_acc,df_gir,i):
     magacc = df_acc.loc[df_acc["sampling"] == i, "Magnitude"]
     magacc = magacc.reset_index(drop=True)
@@ -149,77 +198,95 @@ def plotar_grafico_das_atividade(i,lista_de_nomes,df_sampling,magacc,xacc,yacc,z
     plot_grafico(ygir, tempo_segundos_gir, nome_figura_definitivo, diretorio7, arquivo_erros)
     plot_grafico(zgir, tempo_segundos_gir, nome_figura_definitivo, diretorio8, arquivo_erros)
 
-def criar_array_queda(atividade,magacc,xacc,yacc,zacc,tempo_segundos_acc,maggir,xgir,ygir,zgir,tempo_segundos_gir ):
+def criar_array_queda(posicao,lista_de_rotulos,lista_array_de_dados,atividade,magacc,xacc,yacc,zacc,tempo_segundos_acc,maggir,xgir,ygir,zgir,tempo_segundos_gir ):
 
-    labels_multiplos = {"ADL_1": 0,"ADL_2": 1,"ADL_3": 2,"ADL_4": 3,"ADL_5": 4,"ADL_6": 5,"ADL_7": 6,"ADL_8": 7,"ADL_11": 8,"ADL_12": 9,"ADL_13": 10,"ADL_14": 11,"ADL_15": 12,"OM_1": 13,"OM_2": 14,
-              "OM_3": 15,"OM_4": 16,"OM_5": 17,"OM_6": 18,"OM_7": 19,"OM_8": 20,"OM_9": 21,"FALL_1": 22,"FALL_2": 23,"FALL_3": 24,"FALL_5": 25,"FALL_6": 25}
+    lista_atividades_de_cinco_segundos = ["FALL_1", "FALL_2","FALL_3","FALL_5","FALL_6","ADL_7","ADL_8","ADL_15"]
+    lista_atividades_de_transicao = ["OM_3", "OM_4", "OM_5","OM_6", "OM_7", "OM_8"]
 
-    labels_tres = {"ADL_1": 1, "ADL_2": 1, "ADL_3": 1, "ADL_4": 1, "ADL_5": 1, "ADL_6": 1, "ADL_7": 1, "ADL_8": 1,
-                       "ADL_11": 1, "ADL_12": 1, "ADL_13": 1, "ADL_14": 1, "ADL_15": 1, "OM_1": 2,
-                       "OM_2": 2, "OM_3": 2, "OM_4": 2, "OM_5": 2, "OM_6": 2, "OM_7": 2, "OM_8": 2, "OM_9": 2,
-                       "FALL_1": 0, "FALL_2": 0, "FALL_3": 0, "FALL_5": 0, "FALL_6": 0}
-
-
-    '''Labels binario 1 as atividades 0M6 a OM8 são consideradas como quedas'''
-    labels_binario1 = {"ADL_1": 1, "ADL_2": 1, "ADL_3": 1, "ADL_4": 1, "ADL_5": 1, "ADL_6": 1, "ADL_7": 1, "ADL_8": 1,"ADL_11": 1, "ADL_12": 1, "ADL_13": 1, "ADL_14": 1, "ADL_15": 1,"OM_1": 1,
-                      "OM_2": 1,"OM_3": 1, "OM_4": 1, "OM_5": 1, "OM_6":0 , "OM_7":0 , "OM_8":0 , "OM_9": 1,"FALL_1": 0, "FALL_2": 0, "FALL_3": 0, "FALL_5": 0, "FALL_6": 0}
-
-    '''Labels binario 2 as atividades 0M6 a OM8 são consideradas como não quedas'''
-    labels_binario2 = {"ADL_1": 1, "ADL_2": 1, "ADL_3": 1, "ADL_4": 1, "ADL_5": 1, "ADL_6": 1, "ADL_7": 1, "ADL_8": 1,"ADL_11": 1, "ADL_12": 1, "ADL_13": 1, "ADL_14": 1, "ADL_15": 1, "OM_1": 1,
-                       "OM_2": 1, "OM_3": 1, "OM_4": 1, "OM_5": 1, "OM_6": 0, "OM_7": 0, "OM_8": 0, "OM_9": 1,"FALL_1": 0, "FALL_2": 0, "FALL_3": 0, "FALL_5": 0, "FALL_6": 0}
-
-    lista_atividades_de_cinco_segundos = ["FALL_1", "FALL_2","FALL_3","FALL_5","FALL_6"]
-    lista_atividades_de_transicao = ["OM_3", "OM_4", "OM_5":, "OM_6", "OM_7", "OM_8"]
-
-    rotulo_multiplos = labels_multiplos.get(atividade)
-    labels_tres = labels_tres.get(atividade)
-    labels_binario1 = labels_binario1.get(atividade)
-    labels_binario2 = labels_binario2.get(atividade)
+    rotulo_multiplos ,rotulo_tres,rotulo_binario1,rotulo_binario2 = gerar_rotulos(atividade)
     
-    if posicao = "CHEST":
+    if posicao == "CHEST":
         tamanho_do_array = 1050
     else:
         tamanho_do_array = 480
         
     
         if atividade in lista_atividades_de_cinco_segundos:
-            array_de_dados = magacc[:tamanho_do_array]
-            array_de_dados = np.array(array_de_dados)
+            gerar_array_de_atividades_de_5s(atividade,magacc, tamanho_do_array, lista_array_de_dados,lista_de_rotulos, rotulo)
+
+
+            valor_maximo = max(magacc)
+            if atividade == "ADL_7" or atividade == "ADL_8" or atividade == "ADL_15":
+                array_de_dados = magacc[:tamanho_do_array]
+                array_de_dados = np.array(array_de_dados)
+                array_de_dados = np.expand_dims(array_de_dados, axis=1)
+                lista_array_de_dados.append(array_de_dados)
+                lista_de_rotulos.append(rotulo)
+            elif valor_maximo > 20:
+                array_de_dados = magacc[:tamanho_do_array]
+                array_de_dados = np.array(array_de_dados)
+                array_de_dados = np.expand_dims(array_de_dados, axis=1)
+                lista_array_de_dados.append(array_de_dados)
+                lista_de_rotulos.append(rotulo)
+
             
         elif atividade in lista_atividades_de_transicao:
-            valor_maximo =magacc.index(max(magacc))
-            valor_inicial = valor_maximo -(tamanho_do_array/2)
-            valor_final = valor_maximo +(tamanho_do_array/2)
-            array_de_dados = magacc[valor_inicial:valor_final]
+            valor_maximo = max(magacc)
+            indice_do_valor_maximo = int(magacc.loc[magacc == valor_maximo].index[0])
+            indice_inicial = int(indice_do_valor_maximo -(tamanho_do_array/2))
+            indice_final = int(indice_do_valor_maximo +(tamanho_do_array/2))
+
+
+            if indice_inicial < 0:
+                indice_inicial = 0
+                indice_final = tamanho_do_array
+            elif (indice_final - indice_do_valor_maximo) < tamanho_do_array/2:
+                indice_final = int(magacc.index[-1])
+                indice_inicial = indice_final - tamanho_do_array
+
+            array_de_dados = magacc[indice_inicial:indice_final]
+            array_de_dados = np.array(array_de_dados)
+            array_de_dados = np.expand_dims(array_de_dados, axis=1)
+            lista_array_de_dados.append(array_de_dados)
         else:
-            
-            
-            div = math.floor((len(magacc)) / tamanho_do_array))
+            div = math.floor(len(magacc)/tamanho_do_array)
             a = 0
             b = tamanho_do_array
 
             for i in range(div):
-                
-                
-                
+                array_de_dados = magacc[a:b]
+
                 a += tamanho_do_array
                 b += tamanho_do_array
 
-    array_de_dados = np.expand_dims(array_de_dados, axis=1)
-    lista_array_de_dados.append(array_de_dados)
+                array_de_dados = np.array(array_de_dados)
+                array_de_dados = np.expand_dims(array_de_dados, axis=1)
+                lista_array_de_dados.append(array_de_dados)
 
 def plotar_atividades(df_acc,df_gir,df_sampling,diretorio1,diretorio2,diretorio3,diretorio4,diretorio5, diretorio6, diretorio7,
                                      diretorio8,arquivo_erros):
     lista_de_nomes = []
 
+    #magacc
+    lista_array_de_dados_magacc = []
+    lista_de_rotulos_magacc_multiplo = []
+    lista_de_rotulos_magacc_tres_labels = []
+    lista_de_rotulos_magacc_binario1 = []
+    lista_de_rotulos_magacc_binario2 = []
+
     for i in (df_sampling["id"]):
+
+
         atividade = (df_sampling.loc[df_sampling["id"] == i, "exercise"].iloc[0])
 
         magacc,xacc,yacc,zacc,tempo_segundos_acc,maggir,xgir,ygir,zgir,tempo_segundos_gir = seccionar_array_de_dados(df_acc,df_gir,i)
 
-        plotar_grafico_das_atividade(i, lista_de_nomes,df_sampling, magacc, xacc, yacc, zacc, tempo_segundos_acc, maggir, xgir,ygir, zgir,
-                                     tempo_segundos_gir,diretorio1, diretorio2, diretorio3, diretorio4, diretorio5, diretorio6, diretorio7,
-                                     diretorio8, arquivo_erros)
+        criar_array_queda(posicao, lista_de_rotulos, lista_array_de_dados, atividade, magacc, xacc, yacc, zacc,
+                          tempo_segundos_acc, maggir, xgir, ygir, zgir, tempo_segundos_gir)
+
+        #plotar_grafico_das_atividade(i, lista_de_nomes,df_sampling, magacc, xacc, yacc, zacc, tempo_segundos_acc, maggir, xgir,ygir, zgir,
+                                     #tempo_segundos_gir,diretorio1, diretorio2, diretorio3, diretorio4, diretorio5, diretorio6, diretorio7,
+                                     #diretorio8, arquivo_erros)
 
 
 
@@ -242,7 +309,7 @@ diretorio8 ="/home/dev/Área de trabalho/Combatente/Combatente/imagens_new_datab
 
 arquivo_erros = "/home/dev/Área de trabalho/Combatente/Combatente/imagens_new_database/erros"
 
-posicao = "CHEST"
+posicao = "LEFT"
 
 for subdiretorio in lista_de_subdiretorios:
     acc,gir,sampling = obter_caminhos_dos_arquivos(diretorio_principal, subdiretorio, posicao)
