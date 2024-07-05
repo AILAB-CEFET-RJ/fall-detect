@@ -228,7 +228,7 @@ def generate_training_testing_and_validation_sets(data=None, label=None):
         return X_train, X_test, y_train, y_test, X_val, y_val
 
 '''Define the search space and the parameters to be optimized.'''
-def objective(trial,input_shape,X_train,y_train,X_val,y_val,neural_network_type,output_dir):
+def objective(trial,input_shape,X_train,y_train,X_val,y_val,neural_network_type,output_dir,number_of_labels):
 
     mcc = None
 
@@ -244,7 +244,7 @@ def objective(trial,input_shape,X_train,y_train,X_val,y_val,neural_network_type,
         decision_threshold = trial.suggest_float('decision_threshold', 0.5, 0.9,step=0.1)
 
         model,historic = cnn1d_architecture(input_shape,X_train,y_train,X_val,y_val,filter_size,kernel_size,
-                                            num_layers,num_dense_layers,dense_neurons,dropout,learning_rate)
+                                            num_layers,num_dense_layers,dense_neurons,dropout,learning_rate,number_of_labels)
 
         y_pred_prob = model.predict(X_val)
         y_pred = (y_pred_prob[:, 1] >= decision_threshold).astype(int)
@@ -270,7 +270,7 @@ def objective(trial,input_shape,X_train,y_train,X_val,y_val,neural_network_type,
         learning_rate = trial.suggest_categorical('learning_rate', [0.001, 0.003, 0.005, 0.007, 0.01, 0.03, 0.05, 0.07])
         decision_threshold = trial.suggest_float('decision_threshold', 0.5, 0.9,step=0.1)
 
-        model, historic = mlp_architecture(input_shape,X_train,y_train,X_val,y_val,num_layers,dense_neurons,dropout,learning_rate)
+        model, historic = mlp_architecture(input_shape,X_train,y_train,X_val,y_val,num_layers,dense_neurons,dropout,learning_rate,number_of_labels)
 
         y_pred_prob = model.predict(X_val)
         y_pred = (y_pred_prob[:, 1] >= decision_threshold).astype(int)
@@ -302,10 +302,10 @@ def objective(trial,input_shape,X_train,y_train,X_val,y_val,neural_network_type,
     return mcc
 
 '''Creates an Optuna study object that defines the maximization direction to optimize the objective function.'''
-def create_study_object(objective, input_shape, X_train, y_train, X_val, y_val, neural_network_type,neural_network_results_dir):
+def create_study_object(objective, input_shape, X_train, y_train, X_val, y_val, neural_network_type,neural_network_results_dir,number_of_labels):
     study = optuna.create_study(direction="maximize")
 
-    study.optimize(lambda trial: objective(trial, input_shape, X_train, y_train, X_val, y_val, neural_network_type,neural_network_results_dir), n_trials=100)
+    study.optimize(lambda trial: objective(trial, input_shape, X_train, y_train, X_val, y_val, neural_network_type,neural_network_results_dir,number_of_labels), n_trials=100)
 
     best_trial = study.best_trial
     best_params = best_trial.params
