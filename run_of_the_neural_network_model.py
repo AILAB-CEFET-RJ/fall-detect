@@ -22,8 +22,8 @@ data_path = os.path.join(current_directory,"labels_and_data","data","chest") if 
             else os.path.join(current_directory,"labels_and_data","data","left") if position == "left" \
             else os.path.join(current_directory,"labels_and_data","data","right")
 label_path = os.path.join(current_directory,"labels_and_data","labels","chest") if position == "chest" \
-            else os.path.join(current_directory,"labels_and_data","data","left") if position == "left" \
-            else os.path.join(current_directory,"labels_and_data","data","right")
+            else os.path.join(current_directory,"labels_and_data","labels","left") if position == "left" \
+            else os.path.join(current_directory,"labels_and_data","labels","right")
 
 array_size = 1020 if position == "chest" else 450
 
@@ -84,7 +84,7 @@ print("\n")
 print("Starting Optimization")
 print("\n")
 
-best_trial,best_params = create_study_object(objective, input_shape, X_train, y_train, X_val, y_val, neural_network_type,neural_network_results_dir)
+best_trial,best_params = create_study_object(objective, input_shape, X_train, y_train, X_val, y_val, neural_network_type,neural_network_results_dir,number_of_labels)
 
 csv_file_path = os.path.join(scenario_dir, 'best_trial.csv')
 save_best_trial_to_csv(best_trial, best_params, csv_file_path)
