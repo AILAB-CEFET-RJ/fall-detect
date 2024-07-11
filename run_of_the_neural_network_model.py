@@ -9,12 +9,9 @@ position = "left"
 #position = "chest"
 #position = "right"
 
-domain = "time"
-#domain = "frequency"
-
 #label_type = "multiple_one"
-label_type = "multiple_two"
-#label_type = "binary_one"
+#label_type = "multiple_two"
+label_type = "binary_one"
 #label_type = "binary_two"
 
 number_of_labels = 37 if label_type == "multiple_one" else 26 if label_type == "multiple_two" else 2
@@ -87,7 +84,7 @@ print("\n")
 print("Starting Optimization")
 print("\n")
 
-best_trial,best_params = create_study_object(objective, input_shape, X_train, y_train, X_val, y_val, neural_network_type,neural_network_results_dir,number_of_labels)
+best_trial,best_params = create_study_object(objective, input_shape, X_train, y_train, X_val, y_val, neural_network_type,scenario_dir,number_of_labels)
 
 csv_file_path = os.path.join(scenario_dir, 'best_trial.csv')
 save_best_trial_to_csv(best_trial, best_params, csv_file_path)
@@ -96,7 +93,12 @@ print("\n")
 print("Starting Training")
 print("\n")
 
-for i in range(1, 4):
+for i in range(1, 21):
+
+    print("\n")
+    print(f'Training Model {i}')
+    print("\n")
+
     if neural_network_type == "CNN1D":
 
         mlp_output_dir = os.path.join(scenario_dir, f'CNN1D_model_{i}')
