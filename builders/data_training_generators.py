@@ -67,13 +67,16 @@ Populates the lists with data arrays and labels for each activity for all
 collected data files. Used inside a "for" loop in the "generate_activities" function.
 """
 def create_data_sets_for_training(position, activity, magacc, xacc, yacc, zacc, maggyr, xgyr, ygyr, zgyr,
-                                  list_of_data_arrays_in_the_time_domain, list_of_data_arrays_in_the_frequency_domain,
-                                  labels_list):
+                                  list_of_data_arrays_in_the_time_domain, list_of_data_arrays_in_the_frequency_domain,labels_list):
+
+    multiple_class_label_1, multiple_class_label_2, binary_class_label_1, binary_class_label_2 = create_labels(activity)
+
+    activity = activity.split("_with_rifle")[0]
 
     five_second_activity_list = ["FALL_1", "FALL_2","FALL_3","FALL_5","FALL_6","ADL_5","ADL_6","ADL_7","ADL_8","ADL_15"]
     transition_activities_list = ["OM_3", "OM_4", "OM_5","OM_6", "OM_7", "OM_8"]
 
-    multiple_class_label_1,multiple_class_label_2,binary_class_label_1,binary_class_label_2 = create_labels(activity)
+
 
     array_size = 1020 if position == "CHEST" else 450
 

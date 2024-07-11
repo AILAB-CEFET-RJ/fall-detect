@@ -305,7 +305,7 @@ def objective(trial,input_shape,X_train,y_train,X_val,y_val,neural_network_type,
 def create_study_object(objective, input_shape, X_train, y_train, X_val, y_val, neural_network_type,neural_network_results_dir,number_of_labels):
     study = optuna.create_study(direction="maximize")
 
-    study.optimize(lambda trial: objective(trial, input_shape, X_train, y_train, X_val, y_val, neural_network_type,neural_network_results_dir,number_of_labels), n_trials=100)
+    study.optimize(lambda trial: objective(trial, input_shape, X_train, y_train, X_val, y_val, neural_network_type,neural_network_results_dir,number_of_labels), n_trials=3)
 
     best_trial = study.best_trial
     best_params = best_trial.params
