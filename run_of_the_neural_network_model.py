@@ -9,10 +9,13 @@ position = "left"
 #position = "chest"
 #position = "right"
 
+domain = "time"
+#domain = "frequency"
+
 #label_type = "multiple_one"
-#label_type = "multiple_two"
+label_type = "multiple_two"
 #label_type = "binary_one"
-label_type = "binary_two"
+#label_type = "binary_two"
 
 number_of_labels = 37 if label_type == "multiple_one" else 26 if label_type == "multiple_two" else 2
 
@@ -25,7 +28,10 @@ label_path = os.path.join(current_directory,"labels_and_data","labels","chest") 
             else os.path.join(current_directory,"labels_and_data","labels","left") if position == "left" \
             else os.path.join(current_directory,"labels_and_data","labels","right")
 
-array_size = 1020 if position == "chest" else 450
+if domain == "frequency":
+    array_size = 510 if position == "chest" else 225
+else:
+    array_size = 1020 if position == "chest" else 450
 
 neural_network_scenarios = {
     "Sc1_acc_T": [os.path.join(data_path,'magacc_time_domain_data_array.npy'), (array_size,1)], # for Sc1_CNN1D_acc_T and Sc1_MLP_acc_T
@@ -46,8 +52,8 @@ scenario = "Sc1_acc_T"  #Change the scenario here according to the network you w
 
 data = neural_network_scenarios[scenario]
 
-#neural_network_type = "CNN1D" #Comment or uncomment to train or not train the cnn1d network.
-neural_network_type = "MLP" #Comment or uncomment to train or not train the MLP network.
+neural_network_type = "CNN1D" #Comment or uncomment to train or not train the cnn1d network.
+#neural_network_type = "MLP" #Comment or uncomment to train or not train the MLP network.
 
 label_index = 1 if label_type == "multiple_one" else 2 if label_type == "multiple_two" else 3 if label_type == "binary_one" else 4
 label_options = {1:"multiple_class_label_1.npy",2:"multiple_class_label_2.npy",3:"binary_class_label_1.npy",4:"binary_class_label_2.npy"}
