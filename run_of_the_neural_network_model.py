@@ -28,24 +28,21 @@ label_path = os.path.join(current_directory,"labels_and_data","labels","chest") 
             else os.path.join(current_directory,"labels_and_data","labels","left") if position == "left" \
             else os.path.join(current_directory,"labels_and_data","labels","right")
 
-if domain == "frequency":
-    array_size = 510 if position == "chest" else 225
-else:
-    array_size = 1020 if position == "chest" else 450
+array_size = 1020 if position == "chest" else 450
 
 neural_network_scenarios = {
     "Sc1_acc_T": [os.path.join(data_path,'magacc_time_domain_data_array.npy'), (array_size,1)], # for Sc1_CNN1D_acc_T and Sc1_MLP_acc_T
     "Sc1_gyr_T": [os.path.join(data_path,'maggyr_time_domain_data_array.npy'), (array_size,1)], # for Sc1_CNN1D_gyr_T and Sc1_MLP_gyr_T
-    "Sc1_acc_F": [os.path.join(data_path,'magacc_frequency_domain_data_array.npy'), (array_size,1)], # for Sc1_CNN1D_acc_F and Sc1_MLP_acc_F
-    "Sc1_gyr_F": [os.path.join(data_path,'maggyr_frequency_domain_data_array.npy'), (array_size,1)],  # for Sc1_CNN1D_gyr_F and Sc1_MLP_gyr_F
+    "Sc1_acc_F": [os.path.join(data_path,'magacc_frequency_domain_data_array.npy'), (array_size/2,1)], # for Sc1_CNN1D_acc_F and Sc1_MLP_acc_F
+    "Sc1_gyr_F": [os.path.join(data_path,'maggyr_frequency_domain_data_array.npy'), (array_size/2,1)],  # for Sc1_CNN1D_gyr_F and Sc1_MLP_gyr_F
     "Sc_2_acc_T": [os.path.join(data_path,'acc_x_y_z_axes_time_domain_data_array.npy'), (array_size,3)], # for Sc_2_CNN1D_acc_T and Sc_2_MLP_acc_T
     "Sc_2_gyr_T": [os.path.join(data_path,'gyr_x_y_z_axes_time_domain_data_array.npy'), (array_size,3)], # for Sc_2_CNN1D_gyr_T and Sc_2_MLP_gyr_T
-    "Sc_2_acc_F": [os.path.join(data_path,'acc_x_y_z_axes_frequency_domain_data_array.npy'), (array_size,3)], # for Sc_2_CNN1D_acc_F and Sc_2_MLP_acc_F
-    "Sc_2_gyr_F": [os.path.join(data_path,'gyr_x_y_z_axes_frequency_domain_data_array.npy'), (array_size,3)], # for Sc_2_CNN1D_gyr_F and Sc_2_MLP_gyr_F
+    "Sc_2_acc_F": [os.path.join(data_path,'acc_x_y_z_axes_frequency_domain_data_array.npy'), (array_size/2,3)], # for Sc_2_CNN1D_acc_F and Sc_2_MLP_acc_F
+    "Sc_2_gyr_F": [os.path.join(data_path,'gyr_x_y_z_axes_frequency_domain_data_array.npy'), (array_size/2,3)], # for Sc_2_CNN1D_gyr_F and Sc_2_MLP_gyr_F
     "Sc_3_T": [os.path.join(data_path,'magacc_and_maggyr_time_domain_data_array.npy'), (array_size,2)], # for Sc_3_CNN1D_T and Sc_3_MLP_T
-    "Sc_3_F": [os.path.join(data_path,'magacc_and_maggyr_frequency_domain_data_array.npy'), (array_size,2)], # for Sc_3_CNN1D_F and Sc_3_MLP_F
+    "Sc_3_F": [os.path.join(data_path,'magacc_and_maggyr_frequency_domain_data_array.npy'), (array_size/2,2)], # for Sc_3_CNN1D_F and Sc_3_MLP_F
     "Sc_4_T": [os.path.join(data_path,'acc_and_gyr_three_axes_time_domain_data_array.npy'), (array_size,6)], # for Sc_4_CNN1D_T and Sc_4_MLP_T
-    "Sc_4_F": [os.path.join(data_path,'acc_and_gyr_three_axes_frequency_domain_data_array.npy'), (array_size,6)], # for Sc_4_CNN1D_F and Sc_4_MLP_F
+    "Sc_4_F": [os.path.join(data_path,'acc_and_gyr_three_axes_frequency_domain_data_array.npy'), (array_size/2,6)], # for Sc_4_CNN1D_F and Sc_4_MLP_F
 }
 
 scenario = "Sc1_acc_T"  #Change the scenario here according to the network you want to train
