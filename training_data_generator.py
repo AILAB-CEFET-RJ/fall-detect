@@ -1,11 +1,17 @@
-
+import argparse
+import os
 from builders.data_training_builders import (sort_by_number,get_file_path,create_dataframe,create_directory_if_does_not_exist)
 from builders.data_training_generators import generate_activities
-import os
 import numpy as np
 
 
 ''' EXECUTION OF THE TRAINING DATA GENERATION PROGRAM '''
+
+parser = argparse.ArgumentParser(description="Script for generating training data")
+parser.add_argument('position', type=str, choices=['chest', 'left', 'right'], help='Sensor position')
+args = parser.parse_args()
+
+position = args.position.upper()
 
 current_directory = os.path.dirname(__file__)
 
@@ -14,11 +20,6 @@ main_directory = os.path.join(current_directory, 'database')
 subdirectory_list = os.listdir(main_directory)
 
 subdirectory_list.sort(key=sort_by_number)
-
-#position = "LEFT"
-position = "CHEST"
-#position = "RIGHT"
-
 
 if position == "CHEST":
 
@@ -49,7 +50,7 @@ list_of_data_arrays_in_the_frequency_domain = [[] for _ in range(8)]
 
 labels_list = [[] for _ in range(4)]
 
-
+print("comparação realizada")
 for subdirectory in subdirectory_list:
     acc,gyr,sampling = get_file_path(main_directory, subdirectory, position)
     acc_dataframe, gyr_dataframe, sampling_dataframe = create_dataframe(acc, gyr, sampling)
