@@ -239,7 +239,7 @@ def objective(trial,input_shape,X_train,y_train,X_val,y_val,neural_network_type,
         num_layers = trial.suggest_int('num_layers', 2, 4)
         num_dense_layers = trial.suggest_int('num_dense_layers', 1, 3)
         dense_neurons = trial.suggest_int('dense_neurons', 60, 320, log=True)
-        dropout = trial.suggest_float('dropout', 0.5, 0.9, step=0.1)
+        dropout = trial.suggest_float('dropout', 0.1, 0.5, step=0.1)
         learning_rate = trial.suggest_categorical('learning_rate', [0.0001, 0.0003, 0.0006, 0.001, 0.003, 0.006, 0.01])
         decision_threshold = trial.suggest_float('decision_threshold', 0.5, 0.9,step=0.1)
 
@@ -266,7 +266,7 @@ def objective(trial,input_shape,X_train,y_train,X_val,y_val,neural_network_type,
 
         num_layers = trial.suggest_int('num_layers', 1, 5)
         dense_neurons = trial.suggest_int('dense_neurons', 20, 4000, log=True)
-        dropout = trial.suggest_float('dropout', 0.5, 0.9, step=0.1)
+        dropout = trial.suggest_float('dropout', 0.1, 0.5, step=0.1)
         learning_rate = trial.suggest_categorical('learning_rate', [0.001, 0.003, 0.005, 0.007, 0.01, 0.03, 0.05, 0.07])
         decision_threshold = trial.suggest_float('decision_threshold', 0.5, 0.9,step=0.1)
 
@@ -305,7 +305,7 @@ def objective(trial,input_shape,X_train,y_train,X_val,y_val,neural_network_type,
 def create_study_object(objective, input_shape, X_train, y_train, X_val, y_val, neural_network_type,neural_network_results_dir,number_of_labels):
     study = optuna.create_study(direction="maximize")
 
-    study.optimize(lambda trial: objective(trial, input_shape, X_train, y_train, X_val, y_val, neural_network_type,neural_network_results_dir,number_of_labels), n_trials=100)
+    study.optimize(lambda trial: objective(trial, input_shape, X_train, y_train, X_val, y_val, neural_network_type,neural_network_results_dir,number_of_labels), n_trials=20)
 
     best_trial = study.best_trial
     best_params = best_trial.params
